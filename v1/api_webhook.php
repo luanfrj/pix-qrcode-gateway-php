@@ -3,6 +3,9 @@
 include("../connection.php");
 $db = new dbObj();
 $connection =  $db->getConnstring();
+
+$config = parse_ini_file("../gateway_config.ini", true);
+$pix_token = $config['pix']['token'];
  
 $request_method=$_SERVER["REQUEST_METHOD"];
 
@@ -15,9 +18,17 @@ switch($request_method) {
         break;
 }
 
+function verify_url_data($url) {
+
+}
+
 function receive_webhook() {
     $post_data = file_get_contents('php://input');
     $data_json = json_decode($post_data);
+    $url = $data_json["resource"];
+    $fp = fopen('data.txt', 'w');
+    fwrite($fp, $post_data);
+    fclose($fp);
 }
 
 function get_order($id) {
@@ -32,38 +43,6 @@ function get_order($id) {
 
     header("Content-Type: application/json");
     echo json_encode($response[0], JSON_NUMERIC_CHECK);
-
-    mysqli_close($connection);
-}
-
-function get_order_status($id) {
-    global $connection;
-    $query = "SELECT * FROM order_data WHERE external_id = ". $id;
-    $response = array();
-    $result = mysqli_query($connection, $query);
-
-    while ($row = mysqli_fetch_object($result)) {
-        $response[] = $row;
-    }
-
-    header("Content-Type: text/plain");
-    echo $response[0]->order_status;
-
-    mysqli_close($connection);
-}
-
-function get_orders() {
-    global $connection;
-    $query = "SELECT * FROM order_data";
-    $response = array();
-    $result = mysqli_query($connection, $query);
-
-    while ($row = mysqli_fetch_object($result)) {
-        $response[] = $row;
-    }
-
-    header("Content-Type: application/json");
-    echo json_encode($response, JSON_NUMERIC_CHECK);
 
     mysqli_close($connection);
 }
