@@ -14,8 +14,27 @@ switch($request_method) {
         break;
 }
 
-function create_order($external_id, $value) {
-    
+function create_order($external_id, $value = 0.25) {
+    $pix_webhook_host = "teste.com";
+
+    $order_data = array(
+        "external_reference" => $external_id,
+        "title" => "Compra pix teste",
+        "description" => "Compra pix teste",
+        "notification_url" => "https://" . $pix_webhook_host . "/pix/webhook/",
+        "expiration_date" => gerar_data_hora(),
+        "total_amount" => $value,
+        "items" => array(
+            array(
+                "title" => "Item de teste",
+                "description" => "Item de teste",
+                "unit_price" => $value,
+                "quantity" => 1,
+                "unit_measure" => "unit",
+                "total_amount" => $value
+            )
+        )
+    );
 }
 
 function get_qrcode_data() {
