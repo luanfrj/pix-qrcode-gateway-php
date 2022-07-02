@@ -1,11 +1,15 @@
 <?php
- 
+
+$config = parse_ini_file("../gateway_config.ini", true);
+$pix_webhook_url = $config['pix']['wbhook_url'];
+$pix_qrcode_duration = $config['pix']['qrcode_duration'];
+
 $request_method=$_SERVER["REQUEST_METHOD"];
 
 switch($request_method) {
 
     case 'GET':
-        get_teste();
+        get_qrcode_data();
         break;
 
     default:
@@ -14,15 +18,21 @@ switch($request_method) {
         break;
 }
 
-function create_order($external_id, $value = 0.25) {
-    $pix_webhook_host = "teste.com";
+function get_expiration() {
+    $current_time = new DateTime('NOW');
+    $current_time->setTimezone(new DateTimeZone('America/Sao_Paulo'));
+    $current_time->add(new DateInterval('PT' . $pix_qrcode_duration . 'M'));
+    $stamp =  $current_time->format('c');
+    return $stamp;
+}
 
+function create_order($external_id, $value = 0.25) {
     $order_data = array(
         "external_reference" => $external_id,
         "title" => "Compra pix teste",
         "description" => "Compra pix teste",
-        "notification_url" => "https://" . $pix_webhook_host . "/pix/webhook/",
-        "expiration_date" => gerar_data_hora(),
+        "notification_url" => $pix_webhook_url,
+        "expiration_date" => get_expiration(),
         "total_amount" => $value,
         "items" => array(
             array(
@@ -35,17 +45,26 @@ function create_order($external_id, $value = 0.25) {
             )
         )
     );
+    header("Content-Type: application/json");
+    echo json_encode($order_data);
 }
 
 function get_qrcode_data() {
+    
+    if(!empty($_GET["id"])) {
+        $id = $_GET["id"];
+        if(!empty($_GET["value"])) {
+            $value = floatval($_GET["value"]);
+            create_order($id, $value);
+        } else {
+            create_order($id);
+        }
 
-}
+    } else {
+        echo "error";
+    }
+    
 
-function get_teste() {
-    $response = "00020101021226940014BR.GOV.BCB.PIX2572pix-qr.mercadopago.com/instore/o/v2/".
-    "73055cb8-ceb7-4c9a-8328-298b0630c6c85204000053039865802BR5904Luan6009SAO PAULO62070503***63042300";
-    header("Content-Type: text/plain");
-    echo $response;
 }
 
 ?>
