@@ -19,13 +19,23 @@ switch($request_method) {
 }
 
 function verify_url_data($url) {
+    global $pix_token;
 
+    $curl = curl_init($url);
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    $headers = array(
+        "Authorization: Bearer ".$pix_token
+    );
+    curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+    $resp = curl_exec($curl);
+    curl_close($curl);
 }
 
 function receive_webhook() {
     $post_data = file_get_contents('php://input');
     $data_json = json_decode($post_data);
-    $url = $data_json["resource"];
+    $url = $data_json->{"resource"};
     $fp = fopen('data.txt', 'w');
     fwrite($fp, $post_data);
     fclose($fp);
