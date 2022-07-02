@@ -1,0 +1,8 @@
+RewriteEngine On
+
+RewriteRule ^teste/?$ api_teste.php [NC,L]
+RewriteRule ^orders/?$ api_orders.php [NC,L]
+RewriteRule ^orders/([0-9]+)/?$ api_orders.php?id=$1 [NC,L]
+RewriteRule ^orders/([0-9]+)/status/?$ api_orders.php?id=$1&status=true [NC,L]
+RewriteRule ^webhook/?$ api_webhook.php [NC,L]
+RewriteRule ^qrcode/?$ api_qrcode.php [NC,L]
