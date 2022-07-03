@@ -25,11 +25,14 @@ function verify_url_data($url) {
     curl_setopt($curl, CURLOPT_URL, $url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     $headers = array(
-        "Authorization: Bearer ".$pix_token
+        "Authorization: Bearer " . $pix_token
     );
     curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
     $resp = curl_exec($curl);
     curl_close($curl);
+
+    $resp_obj =  json_decode($resp);
+    
 }
 
 function receive_webhook() {
