@@ -18,6 +18,14 @@ switch($request_method) {
         break;
 }
 
+function insert_data() {
+    global $connection;
+
+    $query = "INSERT INTO t1 (a,b,c) VALUES (1,2,3)" .
+                "ON DUPLICATE KEY UPDATE c=c+1;";
+
+}
+
 function verify_url_data($url) {
     global $pix_token;
 
@@ -33,6 +41,16 @@ function verify_url_data($url) {
 
     $resp_obj =  json_decode($resp);
     
+    $last_update = $resp_obj->{"last_updated"};
+    $order_status = 0;
+
+    if ($resp_obj->{"status"} == "closed" && count($resp_obj->{"payments"}) > 0 && $resp_obj->{"payments"}[0]->{"status"} == "approved") {
+        $order_status = 1;
+    } else {
+        $order_status = 0;
+    }
+
+
 }
 
 function receive_webhook() {
@@ -42,6 +60,7 @@ function receive_webhook() {
     $fp = fopen('data.txt', 'w');
     fwrite($fp, $post_data);
     fclose($fp);
+    verify_url_data($url);
 }
 
 function get_order($id) {
