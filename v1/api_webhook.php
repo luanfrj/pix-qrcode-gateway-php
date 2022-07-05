@@ -18,12 +18,16 @@ switch($request_method) {
         break;
 }
 
-function insert_data() {
+function insert_data($external_id, $order_status, $last_update) {
     global $connection;
 
-    $query = "INSERT INTO t1 (a,b,c) VALUES (1,2,3)" .
-                "ON DUPLICATE KEY UPDATE c=c+1;";
+    $query = "INSERT INTO order_data (external_id, order_status, last_update) ".
+        "VALUES (".$external_id.", ".$order_status.", '".$last_update."') ".
+        "ON DUPLICATE KEY ".
+        "UPDATE order_status = ".$order_status.", last_update = '".$last_update."';";
 
+    mysqli_query($connection, $query) or die(mysqli_error($connection));
+    mysqli_close($connection);
 }
 
 function verify_url_data($url) {
@@ -41,7 +45,8 @@ function verify_url_data($url) {
 
     $resp_obj =  json_decode($resp);
     
-    $last_update = $resp_obj->{"last_updated"};
+    $last_update = new DateTime($resp_obj->{"last_updated"});
+    $external_id = intval($resp_obj->{"external_reference"});
     $order_status = 0;
 
     if ($resp_obj->{"status"} == "closed" && count($resp_obj->{"payments"}) > 0 && $resp_obj->{"payments"}[0]->{"status"} == "approved") {
@@ -49,7 +54,7 @@ function verify_url_data($url) {
     } else {
         $order_status = 0;
     }
-
+    insert_data($external_id, $order_status, $last_update->format('Y-m-d H:i:s'));
 
 }
 
