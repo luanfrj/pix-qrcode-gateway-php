@@ -1,4 +1,8 @@
 <?php
+// Connect to database
+include("../connection.php");
+$db = new dbObj();
+$connection =  $db->getConnstring();
 
 $config = parse_ini_file("../gateway_config.ini", true);
 $pix_webhook_url = $config['pix']['wbhook_url'];
@@ -50,8 +54,7 @@ function create_order($external_id, $value = 0.25) {
             )
         )
     );
-    //header("Content-Type: application/json");
-    //echo json_encode($order_data);
+
     $url = "https://api.mercadopago.com/instore/orders/qr/seller/collectors/" . $pix_user_id . 
     "/pos/" . $pix_external_pos_id . "/qrs";
     $curl = curl_init($url);
@@ -72,19 +75,46 @@ function create_order($external_id, $value = 0.25) {
 
 }
 
+function order_exists($external_id) {
+    global $connection;
+    $query = "SELECT * FROM order_data WHERE external_id = ". $external_id;
+    $response = array();
+    $result = mysqli_query($connection, $query);
+
+    while ($row = mysqli_fetch_object($result)) {
+        $response[] = $row;
+    }
+
+    mysqli_close($connection);
+    if (count($response) > 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function get_qrcode_data() {
     
     if(!empty($_GET["id"])) {
         $id = $_GET["id"];
-        if(!empty($_GET["value"])) {
-            $value = floatval($_GET["value"]);
-            create_order($id, $value);
+        if(!order_exists($id)) {
+            if(!empty($_GET["value"])) {
+                $value = floatval($_GET["value"]);
+                create_order($id, $value);
+            } else {
+                create_order($id);
+            }
         } else {
-            create_order($id);
+            http_response_code(409);
+            header("Content-Type: text/plain");
+            echo "A Ordem ".$id." já existe";
         }
+        
 
     } else {
-        echo "error";
+        http_response_code(409);
+        header("Content-Type: text/plain");
+        echo "É preciso informar o campo ID";
     }
     
 
