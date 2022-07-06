@@ -69,20 +69,4 @@ function receive_webhook() {
     verify_url_data($url);
 }
 
-function get_order($id) {
-    global $connection;
-    $query = "SELECT * FROM order_data WHERE external_id = ". $id;
-    $response = array();
-    $result = mysqli_query($connection, $query);
-
-    while ($row = mysqli_fetch_object($result)) {
-        $response[] = $row;
-    }
-
-    header("Content-Type: application/json");
-    echo json_encode($response[0], JSON_NUMERIC_CHECK);
-
-    mysqli_close($connection);
-}
-
 ?>
