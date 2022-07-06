@@ -35,6 +35,7 @@ function get_expiration() {
 }
 
 function create_order($external_id, $value = 0.25) {
+    global $pix_token;
     global $pix_webhook_url;
     global $pix_user_id;
     global $pix_external_pos_id;
