@@ -73,9 +73,7 @@ function create_order($external_id, $value = 0.25) {
     curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($order_data));
     $response = curl_exec($curl);
     curl_close($curl);
-
-    echo $url;
-    echo $response;
+    
     $response_object =  json_decode($response);
 
     header("Content-Type: text/plain");

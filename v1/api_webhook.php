@@ -46,6 +46,7 @@ function verify_url_data($url) {
     $resp_obj =  json_decode($resp);
     
     $last_update = new DateTime($resp_obj->{"last_updated"});
+    $last_update->setTimezone(new DateTimeZone('America/Sao_Paulo'));
     $external_id = intval($resp_obj->{"external_reference"});
     $order_status = 0;
 
