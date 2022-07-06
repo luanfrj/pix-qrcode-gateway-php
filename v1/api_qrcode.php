@@ -36,6 +36,8 @@ function get_expiration() {
 
 function create_order($external_id, $value = 0.25) {
     global $pix_webhook_url;
+    global $pix_user_id;
+    global $pix_external_pos_id;
     $order_data = array(
         "external_reference" => $external_id,
         "title" => "Compra pix teste",
@@ -57,17 +59,22 @@ function create_order($external_id, $value = 0.25) {
 
     $url = "https://api.mercadopago.com/instore/orders/qr/seller/collectors/" . $pix_user_id . 
     "/pos/" . $pix_external_pos_id . "/qrs";
+
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_URL, $url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($curl, CURLOPT_POST, 1);
     $headers = array(
         "Authorization: Bearer " . $pix_token,
         "Content-Type: application/json"
     );
     curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($order_data));
     $response = curl_exec($curl);
     curl_close($curl);
 
+    echo $url;
+    echo $response;
     $response_object =  json_decode($response);
 
     header("Content-Type: text/plain");
@@ -112,7 +119,7 @@ function get_qrcode_data() {
         
 
     } else {
-        http_response_code(409);
+        http_response_code(400);
         header("Content-Type: text/plain");
         echo "É preciso informar o campo ID";
     }
