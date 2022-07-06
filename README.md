@@ -1,11 +1,39 @@
 # Gateway para pagamentos com QR-CODE PIX
 
-## Criação do banco de dados
-
-## Configuração da aplicação
-
+## Requisitos
+Para que funcione o gateway precisa de um servidor com o PHP e o Banco de Dados MYSQL instalado.
+Também é preciso que o usuário do Mercado Pago esteja configurado e já exista o STORE e POS, conforme docuemtação em:
+https://www.mercadopago.com.br/developers/pt/docs/qr-code/stores-pos/introduction
+https://www.mercadopago.com.br/developers/pt/docs/qr-code/qr-dynamic-model/integration
 https://www.mercadopago.com.br/developers/pt/reference
 
-https://www.mercadopago.com.br/developers/pt/docs/qr-code/qr-dynamic-model/integration
+## Criação do banco de dados
+O banco de dados precisa ter a tabela `order_data`, conforme mostrado abaixo. O script encontra-se no arquivo `create_table.sql`.
 
-https://www.mercadopago.com.br/developers/pt/docs/qr-code/stores-pos/introduction
+```sql
+CREATE TABLE order_data (
+    external_id INTEGER NOT NULL UNIQUE,
+    order_status INTEGER NOT NULL,
+    last_update TIMESTAMP
+);
+```
+
+## Configuração da aplicação
+A configuração da aplicação é feita usando o arquivo `gateway_config.ini`. Para gerá-lo, ajuste as configurações no arquivo `gateway_config_example.ini` e renomeie para `gateway_config.ini`.
+
+As seguintes informações precisam ser informadas:
+
+```ini
+[database]
+host = localhost        # Endereço do Banco de Dados
+dbname =                # Nome do Banco de dados
+username =              # Usuário do Banco de Dados
+password =              # Senha do Banco de Dados
+
+[pix]
+wbhook_url = https://exemplo.com/pix-gateway/v1/webhook     # URL do Webhook
+qrcode_duration = 10                                        # Tempo de duração do QR Code em minutos
+token =                                                     # Token de acesso à api do Mercado Pago
+user_id =                                                   # User ID do mercado pago
+external_pos_id =                                           # Pos ID do mercado pago
+```
