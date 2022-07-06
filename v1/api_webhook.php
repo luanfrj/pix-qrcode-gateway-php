@@ -63,10 +63,9 @@ function receive_webhook() {
     $post_data = file_get_contents('php://input');
     $data_json = json_decode($post_data);
     $url = $data_json->{"resource"};
-    $fp = fopen('data.txt', 'w');
-    fwrite($fp, $post_data);
-    fclose($fp);
-    verify_url_data($url);
+    if (!empty($url)) {
+        verify_url_data($url);
+    }
 }
 
 ?>
