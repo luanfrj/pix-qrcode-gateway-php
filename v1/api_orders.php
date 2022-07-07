@@ -26,42 +26,48 @@ switch($request_method) {
 
 function get_order($id) {
     global $connection;
-    $query = "SELECT * FROM order_data WHERE external_id = ". $id;
+    $query = "SELECT * FROM order_data WHERE external_id = ?;";
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
     $response = array();
-    $result = mysqli_query($connection, $query);
-
     while ($row = mysqli_fetch_object($result)) {
         $response[] = $row;
     }
+    mysqli_stmt_close($stmt);
 
     header("Content-Type: application/json");
     echo json_encode($response[0], JSON_NUMERIC_CHECK);
 
-    mysqli_close($connection);
 }
 
 function get_order_status($id) {
     global $connection;
-    $query = "SELECT * FROM order_data WHERE external_id = ". $id;
+    $query = "SELECT * FROM order_data WHERE external_id = ?;";
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
     $response = array();
-    $result = mysqli_query($connection, $query);
-
     while ($row = mysqli_fetch_object($result)) {
         $response[] = $row;
     }
+    mysqli_stmt_close($stmt);
 
     header("Content-Type: text/plain");
     echo $response[0]->order_status;
 
-    mysqli_close($connection);
 }
 
 function get_orders() {
     global $connection;
     $query = "SELECT * FROM order_data";
-    $response = array();
     $result = mysqli_query($connection, $query);
-
+    
+    $response = array();
     while ($row = mysqli_fetch_object($result)) {
         $response[] = $row;
     }

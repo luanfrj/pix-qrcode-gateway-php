@@ -83,15 +83,19 @@ function create_order($external_id, $value = 0.25) {
 
 function order_exists($external_id) {
     global $connection;
-    $query = "SELECT * FROM order_data WHERE external_id = ". $external_id;
-    $response = array();
-    $result = mysqli_query($connection, $query);
+    $query = "SELECT * FROM order_data WHERE external_id = ?;";
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, 'i', $external_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
+    $response = array();
     while ($row = mysqli_fetch_object($result)) {
         $response[] = $row;
     }
 
-    mysqli_close($connection);
+    mysqli_stmt_close($stmt);
+
     if (count($response) > 0) {
         return true;
     } else {

@@ -21,13 +21,15 @@ switch($request_method) {
 function insert_data($external_id, $order_status, $last_update) {
     global $connection;
 
-    $query = "INSERT INTO order_data (external_id, order_status, last_update) ".
-        "VALUES (".$external_id.", ".$order_status.", '".$last_update."') ".
-        "ON DUPLICATE KEY ".
-        "UPDATE order_status = ".$order_status.", last_update = '".$last_update."';";
+    $query = "INSERT INTO order_data (external_id, order_status, last_update) VALUES (?, ?, ?) ".
+        "ON DUPLICATE KEY UPDATE external_id = ?, order_status = ?, last_update = ?;";
 
-    mysqli_query($connection, $query) or die(mysqli_error($connection));
-    mysqli_close($connection);
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, 'iisiis', $external_id, $order_status, $last_update, $external_id, $order_status, $last_update);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+
+    echo $external_id;
 }
 
 function verify_url_data($url) {
