@@ -38,8 +38,11 @@ function get_order($id) {
     }
     mysqli_stmt_close($stmt);
 
+    $response_data = json_encode($response[0], JSON_NUMERIC_CHECK);
+    $size = strlen($response_data);
     header("Content-Type: application/json");
-    echo json_encode($response[0], JSON_NUMERIC_CHECK);
+    header("Content-length: $size");
+    echo $response_data;
 
 }
 
@@ -57,7 +60,9 @@ function get_order_status($id) {
     }
     mysqli_stmt_close($stmt);
 
+    $size = 1;
     header("Content-Type: text/plain");
+    header("Content-length: $size");
     echo $response[0]->order_status;
 
 }
@@ -71,11 +76,14 @@ function get_orders() {
     while ($row = mysqli_fetch_object($result)) {
         $response[] = $row;
     }
-
-    header("Content-Type: application/json");
-    echo json_encode($response, JSON_NUMERIC_CHECK);
-
     mysqli_close($connection);
+
+    $response_data = json_encode($response, JSON_NUMERIC_CHECK);
+    $size = strlen($response_data);
+    header("Content-Type: application/json");
+    header("Content-length: $size");
+    echo $response_data;
+
 }
 
 ?>

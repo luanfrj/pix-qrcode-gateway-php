@@ -76,8 +76,12 @@ function create_order($external_id, $value = 0.25) {
     
     $response_object =  json_decode($response);
 
+    $qr_data = $response_object->{"qr_data"};
+    $size = strlen($qr_data);
+
     header("Content-Type: text/plain");
-    echo $response_object->{"qr_data"};
+    header("Content-length: $size");
+    echo $qr_data;
 
 }
 
