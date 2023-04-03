@@ -2,7 +2,7 @@
 
 ## Requisitos
 Para que funcione o gateway precisa de um servidor com o PHP e o Banco de Dados MYSQL instalado.
-Também é preciso que o usuário do Mercado Pago esteja configurado e já exista o STORE e POS, conforme docuemtação em:
+Também é preciso que o usuário do Mercado Pago esteja configurado e já exista o STORE e POS, conforme documentação em:
 https://www.mercadopago.com.br/developers/pt/docs/qr-code/pre-requisites/glossary
 https://www.mercadopago.com.br/developers/pt/reference/stores/_users_user_id_stores/post
 https://www.mercadopago.com.br/developers/pt/reference/pos/_pos/post
